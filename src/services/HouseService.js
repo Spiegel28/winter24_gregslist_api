@@ -7,7 +7,7 @@ class HouseService {
         return houses
     }
 
-    async createCar(data) {
+    async createHouse(data) {
         const house = await dbContext.Houses.create(data)
         return house
 }
