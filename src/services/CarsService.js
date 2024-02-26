@@ -16,8 +16,10 @@ class CarsService {
   }
 
   async getCarById(carId) {
+    // NOTE findById is the mongoose method that will find a document by it's _id and return it. If it does not find a document by that id, it returns null
     const car = await dbContext.Cars.findById(carId)
 
+    // NOTE if car is null, the client supplied a bad id
     if (!car) {
       throw new BadRequest(`No car found with id of ${carId}`)
     }
@@ -30,24 +32,28 @@ class CarsService {
 
     // const carToUpdate = dbContext.Cars.findById(carId)
 
+    // NOTE we call the method already set up in our service, which has the benefit of also null checking the car before returning it
     const carToUpdate = await this.getCarById(carId)
 
     // carToUpdate.make = carData.make
 
 
+    // NOTE if the request body does not have a value for imgUrl, we default to value already stored in the database
     carToUpdate.imgUrl = carData.imgUrl || carToUpdate.imgUrl
 
+    // NOTE we check to see if price is undefined and run a ternary, otherwise the price cannot be set to 0
     carToUpdate.price = carData.price == undefined ?
       carToUpdate.price
       :
       carData.price
 
-
+    // NOTE we check to see if hasSalvagedTitle is undefined here, otherwise the property cannot be set to false
     carToUpdate.hasSalvagedTitle = carData.hasSalvagedTitle == undefined ?
       carToUpdate.hasSalvagedTitle
       :
       carData.hasSalvagedTitle
 
+    // NOTE method to update the value stored in the database
     await carToUpdate.save()
 
     return carToUpdate
@@ -57,6 +63,7 @@ class CarsService {
     // await dbContext.Cars.findByIdAndDelete(carId)
     const carToDestroy = await this.getCarById(carId)
 
+    // NOTE method to remove the value from the database
     await carToDestroy.deleteOne()
 
     return `${carToDestroy.make} ${carToDestroy.model} has been destroyed!`
